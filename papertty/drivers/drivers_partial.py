@@ -201,7 +201,7 @@ class WavesharePartial(WaveshareEPD):
             self.display_frame()
             
 
-class rpi_epd2in7(WavesharePartial)
+class rpi_epd2in7(WavesharePartial):
     RST_PIN         = 17
     DC_PIN          = 25
     CS_PIN          = 8
