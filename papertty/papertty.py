@@ -19,6 +19,7 @@ import papertty.drivers.drivers_color as drivers_color
 import papertty.drivers.drivers_colordraw as drivers_colordraw
 import papertty.drivers.driver_it8951 as driver_it8951
 import papertty.drivers.drivers_4in2 as driver_4in2
+import papertty.drivers.epd2in7_partial as epd2in7_partial
 
 # for ioctl
 import fcntl
