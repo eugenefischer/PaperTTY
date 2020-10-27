@@ -36,9 +36,6 @@ from .lut import LUT, QuickLUT
 import RPi.GPIO as GPIO
 from PIL import ImageChops
 
-white = 255
-black = 0
-
 # Pin definition
 RST_PIN         = 17
 DC_PIN          = 25
@@ -100,6 +97,8 @@ def _nearest_mult_of_8(number, up=True):
 
 
 class EPD(object):
+    white = 255
+    black = 0
     def __init__(self, partial_refresh_limit=32, fast_refresh=True):
         """ Initialize the EPD class.
         `partial_refresh_limit` - number of partial refreshes before a full refrersh is forced
