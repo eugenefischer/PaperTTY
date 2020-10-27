@@ -36,6 +36,9 @@ from .lut import LUT, QuickLUT
 import RPi.GPIO as GPIO
 from PIL import ImageChops
 
+white = 255
+black = 0
+
 # Pin definition
 RST_PIN         = 17
 DC_PIN          = 25
