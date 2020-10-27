@@ -254,7 +254,7 @@ class rpi_epd2in7(WavesharePartial):
 
 
     def _nearest_mult_of_8(number, up=True):
-    """ Find the nearest multiple of 8, rounding up or down """
+        """ Find the nearest multiple of 8, rounding up or down """
         if up:
             return ((number + 7) // 8) * 8
         else:
