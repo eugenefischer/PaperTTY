@@ -149,7 +149,7 @@ class Epd2in7_partial(DisplayDriver):
         self.digital_write(DC_PIN, GPIO.HIGH)
         self.spi.writebytes([data])
 
-    def init(self):
+    def init(self, partial=False): #partial argument added for PaperTTY compatibility
         """ Preform the hardware initialization sequence """
         # Interface initialization:
         GPIO.setmode(GPIO.BCM)
