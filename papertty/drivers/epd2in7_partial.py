@@ -28,6 +28,11 @@
 # LIABILITY WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+#Mildly altered by Eugene Fischer for compatibility with Jouko Strömmer's PaperTTY
+#October 29, 2020
+
+
 from __future__ import unicode_literals, division, absolute_import
 
 import time
@@ -35,6 +40,8 @@ import spidev
 from .lut import LUT, QuickLUT
 import RPi.GPIO as GPIO
 from PIL import ImageChops
+#added by eugenefischer for compatibility with PaperTTY
+from papertty.drivers.drivers_base import DisplayDriver
 
 # Pin definition
 RST_PIN         = 17
@@ -44,8 +51,8 @@ BUSY_PIN        = 24
 
 
 # Display resolution
-EPD_WIDTH       = 176
-EPD_HEIGHT      = 264
+EPD_WIDTH       = 264
+EPD_HEIGHT      = 176
 
 # EPD2IN7 commands
 # Specifciation: https://www.waveshare.com/w/upload/2/2d/2.7inch-e-paper-Specification.pdf
@@ -96,9 +103,8 @@ def _nearest_mult_of_8(number, up=True):
         return (number // 8) * 8
 
 
-class EPD(object):
-    white = 255
-    black = 0
+class EPD(DisplayDriver):
+   
     def __init__(self, partial_refresh_limit=32, fast_refresh=True):
         """ Initialize the EPD class.
         `partial_refresh_limit` - number of partial refreshes before a full refrersh is forced
@@ -117,6 +123,14 @@ class EPD(object):
         self._partial_refresh_count = 0
         self._init_performed = False
         self.spi = spidev.SpiDev(0, 0)
+        
+        #code added by eugenefischer for integration with PaperTTY
+        self.name = epd2in7_partial
+        self.supports_partial = False #So PaperTTY won't calculate image diff itself
+        self.white = 255
+        self.black = 0
+        self.colors = 2
+        self.type = 'Waveshare e-Paper'
 
     def digital_write(self, pin, value):
         return GPIO.output(pin, value)
@@ -402,3 +416,7 @@ class EPD(object):
         self.send_command(DEEP_SLEEP)
         self.delay_ms(2)
         self.send_data(0xa5)  # deep sleep requires 0xa5 as a "check code" parameter
+        
+    #method added for compatibility with PaperTTY    
+    def draw(self, x, y, image):
+        self.smart_update(image)
