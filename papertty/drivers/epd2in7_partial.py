@@ -103,7 +103,7 @@ def _nearest_mult_of_8(number, up=True):
         return (number // 8) * 8
 
 
-class EPD(DisplayDriver):
+class epd2in7_partial(DisplayDriver):
    
     def __init__(self, partial_refresh_limit=32, fast_refresh=True):
         """ Initialize the EPD class.
@@ -125,7 +125,7 @@ class EPD(DisplayDriver):
         self.spi = spidev.SpiDev(0, 0)
         
         #code added by eugenefischer for integration with PaperTTY
-        self.name = epd2in7_partial
+        self.name = 'epd2in7_partial'
         self.supports_partial = False #So PaperTTY won't calculate image diff itself
         self.white = 255
         self.black = 0
