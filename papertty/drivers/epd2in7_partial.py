@@ -221,7 +221,7 @@ class Epd2in7_partial(DisplayDriver):
 
     def wait_until_idle(self):
         """ Wait until screen is idle by polling the busy pin """
-        while(self.digital_read(BUSY_PIN) == 0):      # 0: busy, 1: idle
+        while(self.digital_read(BUSY_PIN) == 1):      # 0: idle, 1: busy
             self.delay_ms(50)
 
     def reset(self):
