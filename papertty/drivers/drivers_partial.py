@@ -200,7 +200,122 @@ class WavesharePartial(WaveshareEPD):
             self.set_frame_memory(image, x, y)
             self.display_frame()
 
+class EPD2in7_partial_base(WaveshareEPD):
+    """common elements for Waveshare 2.7" monochrome partial update drivers"""
+    # Display resolution
+    EPD_WIDTH       = 264
+    EPD_HEIGHT      = 176
 
+    # EPD2IN7 commands
+    # Specifciation: https://www.waveshare.com/w/upload/2/2d/2.7inch-e-paper-Specification.pdf
+    PANEL_SETTING                               = 0x00
+    POWER_SETTING                               = 0x01
+    POWER_OFF                                   = 0x02
+    POWER_OFF_SEQUENCE_SETTING                  = 0x03
+    POWER_ON                                    = 0x04
+    POWER_ON_MEASURE                            = 0x05
+    BOOSTER_SOFT_START                          = 0x06
+    DEEP_SLEEP                                  = 0x07
+    DATA_START_TRANSMISSION_1                   = 0x10
+    DATA_STOP                                   = 0x11
+    DISPLAY_REFRESH                             = 0x12
+    DATA_START_TRANSMISSION_2                   = 0x13
+    PARTIAL_DATA_START_TRANSMISSION_1           = 0x14
+    PARTIAL_DATA_START_TRANSMISSION_2           = 0x15
+    PARTIAL_DISPLAY_REFRESH                     = 0x16
+    LUT_FOR_VCOM                                = 0x20
+    LUT_WHITE_TO_WHITE                          = 0x21
+    LUT_BLACK_TO_WHITE                          = 0x22
+    LUT_WHITE_TO_BLACK                          = 0x23
+    LUT_BLACK_TO_BLACK                          = 0x24
+    PLL_CONTROL                                 = 0x30
+    TEMPERATURE_SENSOR_COMMAND                  = 0x40
+    TEMPERATURE_SENSOR_CALIBRATION              = 0x41
+    TEMPERATURE_SENSOR_WRITE                    = 0x42
+    TEMPERATURE_SENSOR_READ                     = 0x43
+    VCOM_AND_DATA_INTERVAL_SETTING              = 0x50
+    LOW_POWER_DETECTION                         = 0x51
+    TCON_SETTING                                = 0x60
+    TCON_RESOLUTION                             = 0x61
+    SOURCE_AND_GATE_START_SETTING               = 0x62
+    GET_STATUS                                  = 0x71
+    AUTO_MEASURE_VCOM                           = 0x80
+    VCOM_VALUE                                  = 0x81
+    VCM_DC_SETTING_REGISTER                     = 0x82
+    PROGRAM_MODE                                = 0xA0
+    ACTIVE_PROGRAM                              = 0xA1
+    READ_OTP_DATA                               = 0xA2
+    
+    def __init__()
+        super().__init__(name='2.7" BW', width=176, height=264)
+    
+    def init(self, partial=True):
+        self.partial_refresh = partial
+        if self.epd_init() != 0:
+            return -1
+        # EPD hardware init start
+        # The specifics of how this works or what "power optimization" actually means
+        # are unclear to me, so I'm leaving it as-is.
+        self.reset()
+        self.send_command(POWER_SETTING)
+        self.send_data(0x03)                  # VDS_EN, VDG_EN
+        self.send_data(0x00)                  # VCOM_HV, VGHL_LV[1], VGHL_LV[0]
+        self.send_data(0x2b)                  # VDH
+        self.send_data(0x2b)                  # VDL
+        self.send_data(0x09)                  # VDHR
+        self.send_command(BOOSTER_SOFT_START)
+        self.send_data(0x07)
+        self.send_data(0x07)
+        self.send_data(0x17)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0x60)
+        self.send_data(0xA5)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0x89)
+        self.send_data(0xA5)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0x90)
+        self.send_data(0x00)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0x93)
+        self.send_data(0x2A)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0xA0)
+        self.send_data(0xA5)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0xA1)
+        self.send_data(0x00)
+        # Power optimization
+        self.send_command(0xF8)
+        self.send_data(0x73)
+        self.send_data(0x41)
+        self.send_command(PARTIAL_DISPLAY_REFRESH)
+        self.send_data(0x00)
+        self.send_command(POWER_ON)
+        self.wait_until_idle()
+
+        self.send_command(PANEL_SETTING)
+        self.send_data(0xAF)        # KW-BF   KWR-AF    BWROTP 0f
+        self.send_command(PLL_CONTROL)
+        self.send_data(0x3A)        # 3A 100HZ   29 150Hz 39 200HZ    31 171HZ
+        self.send_command(VCM_DC_SETTING_REGISTER)
+        self.send_data(0x12)
+        self.delay_ms(2)
+        self.set_lut()
+        # EPD hardware init end
+        self._init_performed = True
+        
+        def wait_until_idle(self):
+        """ Wait until screen is idle by polling the busy pin """
+        while(self.digital_read(BUSY_PIN) == 0):      # 0: busy, 1: idle
+            self.delay_ms(50)
+            
 class EPD1in54(WavesharePartial):
     """Waveshare 1.54" - monochrome"""
 
