@@ -51,8 +51,8 @@ BUSY_PIN        = 24
 
 
 # Display resolution
-EPD_WIDTH       = 264
-EPD_HEIGHT      = 176
+EPD_WIDTH       = 176
+EPD_HEIGHT      = 264
 
 # EPD2IN7 commands
 # Specifciation: https://www.waveshare.com/w/upload/2/2d/2.7inch-e-paper-Specification.pdf
