@@ -644,3 +644,87 @@ class EPD3in7(WavesharePartial):
         0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
         0x22,0x22,0x22,0x22,0x22
     ]
+    
+    #reset function in sample driver goes High, Low, High
+    def reset(self):
+        self.digital_write(self.RST_PIN, GPIO.HIGH)
+        self.delay_ms(200)
+        self.digital_write(self.RST_PIN, GPIO.LOW)
+        self.delay_ms(200)
+        self.digital_write(self.RST_PIN, GPIO.HIGH)
+        self.delay_ms(200)
+    
+    def init(self):
+        if self.epd_init() != 0:
+            return -1
+        self.lut = self.lut_partial_update if partial else self.lut_full_update
+        self.reset()
+        self.send_command(0x12)
+        self.delay_ms(300)
+
+        self.send_command(0x46)
+        self.send_data(0xF7)
+        self.ReadBusy()
+        self.send_command(0x47)
+        self.send_data(0xF7)
+        self.ReadBusy()
+
+        self.send_command(0x01) # setting gaet number
+        self.send_data(0xDF)
+        self.send_data(0x01)
+        self.send_data(0x00)
+
+        self.send_command(0x03) # set gate voltage
+        self.send_data(0x00)
+
+        self.send_command(0x04) # set source voltage
+        self.send_data(0x41)
+        self.send_data(0xA8)
+        self.send_data(0x32)
+
+        self.send_command(0x11) # set data entry sequence
+        self.send_data(0x03)
+
+        self.send_command(0x3C) # set border
+        self.send_data(0x00)
+        
+        self.send_command(0x0C) # set booster strength
+        self.send_data(0xAE)
+        self.send_data(0xC7)
+        self.send_data(0xC3)
+        self.send_data(0xC0)
+        self.send_data(0xC0)
+
+        self.send_command(0x18) # set internal sensor on
+        self.send_data(0x80)
+
+        self.send_command(0x2C) # set vcom value
+        self.send_data(0x44)
+        
+        self.send_command(0x37)
+        self.send_data(0x00)
+        self.send_data(0xFF)
+        self.send_data(0xFF)
+        self.send_data(0xFF)
+        self.send_data(0xFF)
+        self.send_data(0x4F)
+        self.send_data(0xFF)
+        self.send_data(0xFF)
+        self.send_data(0xFF)
+        self.send_data(0xFF)
+        self.send_command(0x44) # setting X direction start/end position of RAM
+        self.send_data(0x00)
+        self.send_data(0x00)
+        self.send_data(0x17)
+        self.send_data(0x01)
+
+        self.send_command(0x45) # setting Y direction start/end position of RAM
+        self.send_data(0x00)
+        self.send_data(0x00)
+        self.send_data(0xDF)
+        self.send_data(0x01)
+
+        self.send_command(0x22) # Display Update Control 2
+        self.send_data(0xCF)
+        self.set_lut(self.lut)
+        return 0
