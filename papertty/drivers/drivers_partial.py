@@ -801,7 +801,7 @@ class EPD3in7(WavesharePartial):
         self.send_data((y_end>>8) & 0x03)
         
         self.send_command(0x24)
-        for i in range(0, image_counter)
+        for i in range(0, image_counter):
             self.send_data(frame_buffer[i])
             
         self.send_command(0x20)
