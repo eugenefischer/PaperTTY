@@ -654,7 +654,8 @@ class EPD3in7(WavesharePartial):
         self.digital_write(self.RST_PIN, GPIO.HIGH)
         self.delay_ms(200)
     
-    def init(self):
+    def init(self, partial=True):
+        self.partial_refresh = partial
         if self.epd_init() != 0:
             return -1
         self.lut = self.lut_partial_update if partial else self.lut_full_update
