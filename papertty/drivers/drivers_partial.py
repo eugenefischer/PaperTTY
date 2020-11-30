@@ -647,11 +647,11 @@ class EPD3in7(WavesharePartial):
     
     #reset function in sample driver goes High, Low, High
     def reset(self):
-        self.digital_write(self.RST_PIN, GPIO.HIGH)
+        self.digital_write(self.RST_PIN, 1)
         self.delay_ms(200)
-        self.digital_write(self.RST_PIN, GPIO.LOW)
+        self.digital_write(self.RST_PIN, 0)
         self.delay_ms(10)
-        self.digital_write(self.RST_PIN, GPIO.HIGH)
+        self.digital_write(self.RST_PIN, 1)
         self.delay_ms(200)
     
     def init(self, partial=True):
@@ -665,10 +665,10 @@ class EPD3in7(WavesharePartial):
 
         self.send_command(0x46)
         self.send_data(0xF7)
-        self.ReadBusy()
+        self.wait_until_idle()
         self.send_command(0x47)
         self.send_data(0xF7)
-        self.ReadBusy()
+        self.wait_until_idle()
 
         self.send_command(0x01) # setting gaet number
         self.send_data(0xDF)
@@ -731,9 +731,9 @@ class EPD3in7(WavesharePartial):
         return 0
     
     def send_data(self, data):
-        self.digital_write(self.DC_PIN, GPIO.HIGH)
-        self.digital_write(self.CS_PIN, GPIO.LOW)
+        self.digital_write(self.DC_PIN, 1)
+        self.digital_write(self.CS_PIN, 0)
         self.spi_transfer([data])
-        self.digital_write(self.CS_PIN, GPIO.HIGH)
+        self.digital_write(self.CS_PIN, 1)
         
     
