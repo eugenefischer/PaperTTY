@@ -757,6 +757,53 @@ class EPD3in7(WavesharePartial):
                         buf[int((newx + newy*self.width) / 8)] &= ~(0x80 >> (y % 8))
         return buf
     
-    def 
+    def draw(self, x, y, image):
+        """Replace a particular area on the display with an image"""
+        if self.partial_refresh:
+            self.display_partial(self.get_frame_buffer(image), x, y, x + image.width, x + image.height)
+        else:
+            self.display_full(self.get_frame_buffer(image))
+            
+    def display_full(self, frame_buffer):
+        if not frame_buffer:
+            return
         
-    
+        self.send_command(0x4E)
+        self.send_data(0x00)
+        self.send_data(0x00)
+        self.send_command(0x4F)
+        self.send_data(0x00)
+        self.send_data(0x00)
+
+        self.send_command(0x24)
+        for j in range(0, self.height):
+            for i in range(0, int(self.width / 8)):
+                self.send_data(frame_buffer[i + j * int(self.width / 8)])
+
+        self.send_command(0x20)
+        self.wait_until_idle()
+        
+    def display_partial(self, frame_buffer, x_start, y_start, x_end, y_end):
+        if not frame_buffer:
+            return
+        
+        image_width = (x_end - x_start)/8 if (x_end - x_start)%8 == 0 else (x_end - x_start)/8 +1
+        image_counter = image_width * (y_end - y_start)
+        self.send_command(0x44)
+        self.send_data(x_start & 0xff)
+        self.send_data((x_start >> 8) & 0x03)
+        self.send_data(x_end & 0xff)
+        self.send_data((x_end>>8) & 0x03)
+        self.send_command(0x45)
+        self.send_data(y_start & 0xff)
+        self.send_data((y_start >> 8) & 0x03)
+        self.send_data(y_end & 0xff)
+        self.send_data((y_end>>8) & 0x03)
+        
+        self.send_command(0x24)
+        for i in range(0, image_counter)
+            self.send_data(frame_buffer[i])
+            
+        self.send_command(0x20)
+        self.wait_until_idle()
+        
