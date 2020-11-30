@@ -650,7 +650,7 @@ class EPD3in7(WavesharePartial):
         self.digital_write(self.RST_PIN, GPIO.HIGH)
         self.delay_ms(200)
         self.digital_write(self.RST_PIN, GPIO.LOW)
-        self.delay_ms(200)
+        self.delay_ms(10)
         self.digital_write(self.RST_PIN, GPIO.HIGH)
         self.delay_ms(200)
     
@@ -728,3 +728,11 @@ class EPD3in7(WavesharePartial):
         self.send_data(0xCF)
         self.set_lut(self.lut)
         return 0
+    
+    def send_data(self, data):
+        self.digital_write(self.DC_PIN, GPIO.HIGH)
+        self.digital_write(self.CS_PIN, GPIO.LOW)
+        self.spi_transfer([data])
+        self.digital_write(self.CS_PIN, GPIO.HIGH)
+        
+    
