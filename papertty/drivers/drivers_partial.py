@@ -787,7 +787,7 @@ class EPD3in7(WavesharePartial):
         if not frame_buffer:
             return
         
-        image_width = (x_end - x_start)/8 if (x_end - x_start)%8 == 0 else (x_end - x_start)/8 +1
+        image_width = (x_end - x_start)//8 if (x_end - x_start)%8 == 0 else (x_end - x_start)//8 +1
         image_counter = image_width * (y_end - y_start)
         self.send_command(0x44)
         self.send_data(x_start & 0xff)
